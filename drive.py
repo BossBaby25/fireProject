@@ -1,46 +1,71 @@
 
 # Import required libraries
-import sys
 import time
 import RPi.GPIO as GPIO
 
 # Use BCM GPIO references
 # instead of physical pin numbers
-#GPIO.setmode(GPIO.BCM)
-mode=GPIO.getmode()
-print " mode ="+str(mode)
-GPIO.cleanup()
-
+GPIO.setmode(GPIO.BCM)
 # Define GPIO signals to use
-# Physical pins 11,15,16,18
-# GPIO17,GPIO22,GPIO23,GPIO24
+TRIG = 17
+ECHO = 27
 
-StepPinForward=28
-StepPinBackward=32
-sleeptime=1
+INA = 23
+INB = 24
+INC = 25
+IND = 8
 
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(StepPinForward, GPIO.OUT)
-GPIO.setup(StepPinBackward, GPIO.OUT)
+GPIO.setup(TRIG , GPIO.OUT)
+GPIO.setup(ECHO , GPIO.IN)
 
-def forward(x):
-    GPIO.output(StepPinForward, GPIO.HIGH)
-    print ("forwarding running  motor ")
-    time.sleep(x)
-    GPIO.output(StepPinForward, GPIO.LOW)
+GPIO.setup(INA , GPIO.OUT)
+GPIO.setup(INB , GPIO.OUT)
+GPIO.setup(INC , GPIO.OUT)
+GPIO.setup(IND , GPIO.OUT)
 
-def reverse(x):
-    GPIO.output(StepPinBackward, GPIO.HIGH)
-    print ("backwarding running motor")
-    time.sleep(x)
-    G
-19
-StepPinBackward=18 PIO.output(StepPinBackward, GPIO.LOW)
+time.sleep(5)
 
-print ("forward motor ")
-forward(5)
-print("reverse motor") 
-reverse(5)
+def stop():
+    GPIO.output(INA, 0)
+    GPIO.output(INB, 0)
+    GPIO.output(INC, 0)
+    GPIO.output(IND, 0)
 
-print ("Stopping motor")
-GPIO.cleanup()
+def forward():
+    GPIO.output(INA, 1)
+    GPIO.output(INB, 0)
+    GPIO.output(INC, 1)
+    GPIO.output(IND, 0)
+    
+ def left():
+    GPIO.output(INA, 1)
+    GPIO.output(INB, 0)
+    GPIO.output(INC, 0)
+    GPIO.output(IND, 0)
+    
+stop()
+while True:
+    GPIO.output(TRIG, 0)
+    time.sleep(0.1)
+    GPIO.output(TRIG, 1)
+    time.sleep(0.00001)
+    GPIO.output(TRIG, 0)
+    
+    while GPIO.input(ECHO)==0:
+    pulse_start =time.time()
+    
+    while GPIO.input(ECHO)==1:
+    pulse_end =time.time()
+    
+    pulse_duration =pulse_end - pulse_start
+    distance = pulse_duration*17150
+    distance = round(distance ,2)
+    print(distance)
+    
+    if distance < 15:
+        left()
+        time.sleep(1)
+    else:
+        forward()
+        
+    
