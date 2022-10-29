@@ -41,6 +41,12 @@ def forward():
     GPIO.output(INA, 1)
     GPIO.output(INB, 0)
     GPIO.output(INC, 0)
+    GPIO.output(IND, 1)
+    
+ def right():
+    GPIO.output(INA, 0)
+    GPIO.output(INB, 1)
+    GPIO.output(INC, 1)
     GPIO.output(IND, 0)
     
 stop()
@@ -60,12 +66,17 @@ while True:
     pulse_duration =pulse_end - pulse_start
     distance = pulse_duration*17150
     distance = round(distance ,2)
-    print(distance)
     
-    if distance < 15:
-        left()
-        time.sleep(1)
-    else:
+    x = input()
+    if x == 'w':
         forward()
+    elif x == 's':
+        backward()
+    elif x == 'd':
+        right()
+    elif x == 'a':
+        left()
+    elif x == ' ':
+        stop()
         
     
