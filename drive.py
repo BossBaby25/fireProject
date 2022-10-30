@@ -3,7 +3,7 @@ from bottle import route, run, template
 import time
 import RPi.GPIO as GPIO
 
-IP_ADDRESS = '192.168.1.5'
+IP_ADDRESS = '192.168.1.10'
 PORT = 8080
 
 # Use BCM GPIO references
@@ -19,6 +19,8 @@ INB = 24
 INC = 25
 IND = 8
 
+channel = 21
+
 GPIO.setup(TRIG , GPIO.OUT)
 GPIO.setup(ECHO , GPIO.IN)
 
@@ -26,6 +28,8 @@ GPIO.setup(INA , GPIO.OUT)
 GPIO.setup(INB , GPIO.OUT)
 GPIO.setup(INC , GPIO.OUT)
 GPIO.setup(IND , GPIO.OUT)
+
+GPIO.setup(channel, GPIO.IN)
 
 @route('/')
 def hello():
@@ -133,6 +137,16 @@ $(document).ready(function() {
         '''
 
 time.sleep(5)
+
+def callback(channel):
+    print("flame detected")
+    
+GPIO.add_event_detect(channel, GPIO.BOTH, bouncetime=300)  # let us know when the pin goes HIGH or LOW
+GPIO.add_event_callback(channel, callback)  # assign function to GPIO PIN, Run function on change
+ 
+# infinite loop
+while True:
+        time.sleep(1)
 
 @route('/remote/play')
 def play():
